@@ -4,17 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notes</title>
+
     <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
 </head>
 <body>
-    <h1>Notes</h1>
 
-    <input type="text" placeholder="Write note..." id="noteInput">
-    <button onclick="addNote()">Add</button>
+    <header>
+        <h1 id="headingEl">Notes</h1>
+    </header>
 
-    <ul id="noteList">
-        <!-- Notes will be added here -->
-    </ul>
+    <main>
+        <div id="container">
+
+            <form id="noteForm">
+                <input
+                    type="text"
+                    id="noteInput"
+                    placeholder="Enter your note here"
+                >
+
+                <button type="submit" id="addNoteBtn">
+                    Add Note
+                </button>
+            </form>
+
+            <div id="notesContainer">
+                <ul id="notesList">
+
+                    <!-- notes will be added here -->
+
+                </ul>
+            </div>
+
+        </div>
+    </main>
+
 </body>
 </html>
