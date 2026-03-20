@@ -16,28 +16,43 @@ async function getNotes() {
     notes.forEach( note => {
 
         const li = document.createElement('li');
-        li.textContent = note.text + '';
+        
+        // Create a span for the text to allow CSS to truncate long notes
+        const textSpan = document.createElement('span');
+        textSpan.textContent = note.text;
+
+        // Create a container for buttons to keep them small and at the bottom
+        const actionDiv = document.createElement('div');
+        actionDiv.className = 'note-actions';
 
         // Delete Button
         const delBtn = document.createElement('button');
-        delBtn.textContent = '❌'
-        delBtn.addEventListener('dblclick', () => {
+        delBtn.textContent = 'Delete';
+        delBtn.id = 'delete-btn';
+        delBtn.addEventListener('click', () => {
             deleteNote(note.id); // call the delete note function when user double clicks 
         });
 
         // Edit Button
         const editBtn = document.createElement('button');
-        editBtn.textContent = '✏️';
+        editBtn.textContent = 'Edit';
+        editBtn.id = 'edit-btn';
         editBtn.addEventListener('click', () => {
             noteInput.value = note.text;
             currentEditID = note.id;
             noteInput.focus();
+            // Optional: change button text to show we are editing
+            document.getElementById('addNoteBtn').textContent = 'Update Note';
         })
 
-        li.appendChild(editBtn); // append delete button inside ul li [ul > li > Edit]
-        li.appendChild(delBtn); // append delete button inside ul li [ul > li > delete]
-        notesList.appendChild(li); // append li inside ul [ul > li]
+        // Assembly
+        actionDiv.appendChild(editBtn); 
+        actionDiv.appendChild(delBtn); 
+        
+        li.appendChild(textSpan); 
+        li.appendChild(actionDiv); 
 
+        notesList.appendChild(li); // append li inside ul [ul > li]
     });
     
 };
@@ -70,6 +85,7 @@ async function updateNote(id, text) {
     });
 
     currentEditID = null; // reset after the note has been update
+    document.getElementById('addNoteBtn').textContent = 'Add Note';
     getNotes();
 }
 
@@ -78,7 +94,7 @@ async function updateNote(id, text) {
 async function deleteNote(id) {
 
     await fetch(`${API}/${id}`, {
-        method: 'DELETE' // fixed case
+        method: 'DELETE' 
     });
 
     getNotes();
@@ -89,7 +105,7 @@ async function deleteNote(id) {
 noteForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    const text = noteInput.value.trim(); // fixed variable name
+    const text = noteInput.value.trim(); 
 
     if (!text) return;
 
