@@ -17,12 +17,23 @@ async function getNotes() {
         const li = document.createElement('li');
         li.textContent = note.text + '';
 
+        // Delete Button
         const delBtn = document.createElement('button');
         delBtn.textContent = '❌'
         delBtn.addEventListener('dblclick', () => {
             deleteNote(note.id); // call the delete note function when user double clicks 
         });
 
+        // Edit Button
+        const editBtn = document.createElement('button');
+        editBtn.textContent = 'Edit';
+        editBtn.addEventListener('click', () => {
+            noteInput.value = note.text;
+            currentEditID = note.id;
+            noteInput.focus();
+        })
+
+        li.appendChild(editBtn); // append delete button inside ul li [ul > li > Edit]
         li.appendChild(delBtn); // append delete button inside ul li [ul > li > delete]
         notesList.appendChild(li); // append li inside ul [ul > li]
 
@@ -42,6 +53,22 @@ async function addNote(text) {
         body: JSON.stringify( {text: text} )
     });
 
+    getNotes();
+}
+
+// Update notes function 
+
+async function updateNote(text) {
+
+    await fetch(`${API}/${id}`, {
+        method: "PUT", 
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify( {text: text} )
+    });
+
+    currentEditID = null; // reset after the note has been update
     getNotes();
 }
 
@@ -65,7 +92,11 @@ noteForm.addEventListener('submit', (e) => {
 
     if (!text) return;
 
-    addNote(text);
+    if(currentEditID) {
+        updateNote(currentEditID, text);
+    } else {
+        addNote(text);
+    }
 
     noteInput.value = '';
 });
