@@ -1,4 +1,4 @@
-const noteForm = document.getElementById('noteFrom');
+const noteForm = document.getElementById('noteForm');
 const noteInput = document.getElementById('noteInput');
 const notesList = document.getElementById('notesList');
 
@@ -8,9 +8,9 @@ const API = '/notes';
 
 async function getNotes() {
     const res = await fetch(API);
-    const notes = res.json();
+    const notes = await res.json();
 
-    // notesList.innerHTML = '';
+    notesList.innerHTML = ''; 
 
     notes.forEach( note => {
 
@@ -50,7 +50,7 @@ async function addNote(text) {
 async function deleteNote(id) {
 
     await fetch(`${API}/${id}`, {
-        method: 'Delete'
+        method: 'DELETE' // fixed case
     });
 
     getNotes();
@@ -61,7 +61,7 @@ async function deleteNote(id) {
 noteForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    const text = input.value.trim();
+    const text = noteInput.value.trim(); // fixed variable name
 
     if (!text) return;
 
