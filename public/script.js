@@ -3,6 +3,7 @@ const noteInput = document.getElementById('noteInput');
 const notesList = document.getElementById('notesList');
 
 const API = '/notes';
+let currentEditID;
 
 // Get notes function
 
@@ -26,7 +27,7 @@ async function getNotes() {
 
         // Edit Button
         const editBtn = document.createElement('button');
-        editBtn.textContent = 'Edit';
+        editBtn.textContent = '✏️';
         editBtn.addEventListener('click', () => {
             noteInput.value = note.text;
             currentEditID = note.id;
@@ -58,7 +59,7 @@ async function addNote(text) {
 
 // Update notes function 
 
-async function updateNote(text) {
+async function updateNote(id, text) {
 
     await fetch(`${API}/${id}`, {
         method: "PUT", 
