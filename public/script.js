@@ -100,6 +100,15 @@ async function deleteNote(id) {
     getNotes();
 }
 
+// Handle Enter vs Shift+Enter in the textarea
+
+noteInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault(); // Prevent adding a new line
+        noteForm.requestSubmit(); // Programmatically trigger the form submit
+    }
+});
+
 // Submit form 
 
 noteForm.addEventListener('submit', (e) => {
