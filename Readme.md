@@ -97,3 +97,7 @@ http://localhost:3050
 - Deploy
 
 ---
+
+## Picture
+
+![Notes App Pic](image.png)
