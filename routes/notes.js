@@ -1,68 +1,66 @@
-const express = require('express');
+const express = require('express')
+const fs = require('fs');
 
 const router = express.Router();
 
-const Note = require('../models/Note'); // Mongo model
-
-
-// Get Route
-
-router.get('/', async (req, res) => {
-
-    const notes = await Note.find();
+router.get('/', (req, res) => {
+    const data = fs.readFileSync('notes.json')
+    const notes = JSON.parse(data)
 
     res.json(notes)
-
 })
 
+router.post('/', (req, res) => {
+    const data = fs.readFileSync('notes.json');
+    const notes = JSON.parse(data);
 
-// Post Route
-
-router.post('/', async (req, res) => {
-
-    const newNote = new Note({
+    const newNote = {
+        id: Date.now(),
         text: req.body.text
-    });
+    };
 
-    await newNote.save();
+    notes.push(newNote);
+
+    fs.writeFileSync('notes.json', JSON.stringify(notes));
 
     res.json(newNote)
-
 })
 
+router.delete('/:id', (req, res) => {
+    const data = fs.readFileSync('notes.json');
+    let notes = JSON.parse(data);
 
-// Delete Route
+    const id = Number(req.params.id);
 
-router.delete('/:id', async (req, res) => {
+    notes = notes.filter( n => n.id !== id); // filter out all those which doesn't match id
 
-    await Note.findByIdAndDelete(req.params.id);
+    fs.writeFileSync('notes.json', JSON.stringify(notes));
 
-    res.json({ message: 'deleted' });
+    res.json( {message: 'deleted'} );
     console.log('Deleted');
 
 })
 
+router.put('/:id', (req, res) => {
+    const data = fs.readFileSync('notes.json');
+    let notes = JSON.parse(data);
 
-// Update Route
-
-router.put('/:id', async (req, res) => {
+    const id = Number(req.params.id);
 
     const { text } = req.body;
 
-    if (!text) return res.status(400).json({ message: 'text is required' });
-
-    const note = await Note.findByIdAndUpdate(
-        req.params.id,
-        { text },
-        { new: true }
-    );
-
+    const note = notes.find(n => n.id === id);
     if (!note) return res.status(404).json({ message: 'note not found' });
 
+    if (!text) return res.status(400).json({ message: 'text is required' });
+
+    note.text = text;
+
+    fs.writeFileSync('notes.json', JSON.stringify(notes));
+
     res.json(note);
-
+    
     console.log('appended');
-
 })
 
 
