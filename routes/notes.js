@@ -1,66 +1,68 @@
-const express = require('express')
-const fs = require('fs');
+const express = require('express');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-    const data = fs.readFileSync('notes.json')
-    const notes = JSON.parse(data)
+const Note = require('../models/Note'); // Mongo model
+
+
+// Get Route
+
+router.get('/', async (req, res) => {
+
+    const notes = await Note.find();
 
     res.json(notes)
+
 })
 
-router.post('/', (req, res) => {
-    const data = fs.readFileSync('notes.json');
-    const notes = JSON.parse(data);
 
-    const newNote = {
-        id: Date.now(),
+// Post Route
+
+router.post('/', async (req, res) => {
+
+    const newNote = new Note({
         text: req.body.text
-    };
+    });
 
-    notes.push(newNote);
-
-    fs.writeFileSync('notes.json', JSON.stringify(notes));
+    await newNote.save();
 
     res.json(newNote)
+
 })
 
-router.delete('/:id', (req, res) => {
-    const data = fs.readFileSync('notes.json');
-    let notes = JSON.parse(data);
 
-    const id = Number(req.params.id);
+// Delete Route
 
-    notes = notes.filter( n => n.id !== id); // filter out all those which doesn't match id
+router.delete('/:id', async (req, res) => {
 
-    fs.writeFileSync('notes.json', JSON.stringify(notes));
+    await Note.findByIdAndDelete(req.params.id);
 
-    res.json( {message: 'deleted'} );
+    res.json({ message: 'deleted' });
     console.log('Deleted');
 
 })
 
-router.put('/:id', (req, res) => {
-    const data = fs.readFileSync('notes.json');
-    let notes = JSON.parse(data);
 
-    const id = Number(req.params.id);
+// Update Route
+
+router.put('/:id', async (req, res) => {
 
     const { text } = req.body;
 
-    const note = notes.find(n => n.id === id);
-    if (!note) return res.status(404).json({ message: 'note not found' });
-
     if (!text) return res.status(400).json({ message: 'text is required' });
 
-    note.text = text;
+    const note = await Note.findByIdAndUpdate(
+        req.params.id,
+        { text },
+        { new: true }
+    );
 
-    fs.writeFileSync('notes.json', JSON.stringify(notes));
+    if (!note) return res.status(404).json({ message: 'note not found' });
 
     res.json(note);
-    
+
     console.log('appended');
+
 })
 
 
